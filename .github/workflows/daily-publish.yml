@@ -20,7 +20,6 @@ jobs:
       - run: pip install -r requirements.txt
       - name: Generate, validate, commit, publish
         env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           UPLOAD_POST_API_KEY: ${{ secrets.UPLOAD_POST_API_KEY }}
           FACEBOOK_PAGE_ID: '1304976722709656'
           UPLOAD_POST_PROFILE: default
