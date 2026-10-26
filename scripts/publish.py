@@ -1,5 +1,5 @@
 """Daily Sundra Builds graphic generator and Facebook publisher.
-Requires OPENAI_API_KEY and UPLOAD_POST_API_KEY GitHub Actions secrets.
+Uses reviewed content and requires UPLOAD_POST_API_KEY only.
 Fails closed on uncertain image validation or ambiguous publishing results.
 """
 import datetime as dt
@@ -31,28 +31,15 @@ def font(size, bold=False):
 
 def get_content(topic):
     category, headline, fact = topic
-    key = os.environ.get("OPENAI_API_KEY")
-    if not key:
-        raise RuntimeError("OPENAI_API_KEY secret is required")
-    prompt = ("You write for Sundra Builds. Return ONLY JSON with keys headline, insight, takeaway, caption. "
-              "Headline <= 48 chars; insight <= 100; takeaway <= 95. "
-              "Use precise natural English, no emojis. Caption 90-150 words. "
-              "Be technically correct, avoid unverified statistics. "
-              "Topic: " + headline + ". Ground truth: " + fact)
-    r = requests.post("https://api.openai.com/v1/chat/completions",
-        headers={"Authorization": "Bearer " + key},
-        json={"model":"gpt-4.1-mini","messages":[{"role":"user","content":prompt}],
-              "response_format":{"type":"json_object"},"temperature":0.35}, timeout=60)
-    r.raise_for_status()
-    content = json.loads(r.json()["choices"][0]["message"]["content"])
-    if any(not isinstance(content.get(k),str) or not content[k].strip()
-           for k in ("headline","insight","takeaway","caption")):
-        raise ValueError("Incomplete generated content")
-    if len(content["headline"]) > 48 or len(content["insight"]) > 100 or len(content["takeaway"]) > 95:
-        raise ValueError("Generated content exceeds design limits")
-    if any(ord(c)>0xFFFF for c in json.dumps(content)):
-        raise ValueError("Unsupported symbol")
-    return content
+    captions = {
+        "java-dsa": "Binary search is fast because sorted order lets it discard half the remaining array after each comparison. Linear search can work on unsorted data, but may inspect every element. Binary search is O(log n) in the worst case on a sorted array; sorting first has a cost, so it is not always the best choice. #SundraBuilds #Java #Algorithms",
+        "go-backend": "A backend request should not run forever. In Go, use request contexts and propagate them to downstream database and HTTP operations. A timeout limits how long work may continue, while cancellation helps release resources when a client disconnects. #SundraBuilds #Go #Backend",
+        "software-engineering": "A database index can make selective reads faster, but every insert or update may need to maintain that index. Indexes consume storage too. Design indexes around actual queries and measure with your database query planner. #SundraBuilds #Databases",
+        "one-minute-curiosity": "Cryptographic hash functions are designed so small input changes produce unpredictable-looking output changes. This avalanche effect is one reason hashes are useful in security systems. It is not the same thing as encryption. #SundraBuilds #ComputerScience",
+    }
+    return {"headline":headline,"insight":fact,
+            "takeaway":"Understand the trade-off, not just the notation.",
+            "caption":captions[category]}
 
 def wrap(draw, text, f, max_width):
     words, lines, current = text.split(), [], ""
@@ -134,15 +121,14 @@ def main():
         raise RuntimeError("Public image does not match committed PNG")
     key=os.environ.get("UPLOAD_POST_API_KEY")
     if not key: raise RuntimeError("UPLOAD_POST_API_KEY secret is required")
-    # Upload-Post photo API: multipart fields, remote image URL.
+    # Upload-Post photo API: remote URL in photos[] form field.
     # Non-2xx or ambiguous results are NOT automatically retried.
     result=requests.post("https://api.upload-post.com/api/upload_photos",
         headers={"Authorization":"Apikey "+key},
         data={"user":os.getenv("UPLOAD_POST_PROFILE","default"),
               "platform[]":"facebook","title":content["caption"],
               "facebook_page_id":os.environ["FACEBOOK_PAGE_ID"],
-              "async_upload":"false"},
-        files={"photos[]":("image-url.txt",url.encode(),"text/plain")},
+              "photos[]":url,"async_upload":"false"},
         timeout=120)
     response_body=result.text[:5000]
     payload.update({"status":"submitted_unverified","public_image_url":url,
