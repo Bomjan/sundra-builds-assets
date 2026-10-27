@@ -1,0 +1,25 @@
+How do you pick one random log entry when you don’t know how many will arrive?
+
+You don’t need to save them all.
+
+Reservoir sampling keeps one candidate:
+
+1. Keep the first item.
+2. For the nth item, replace your candidate with probability 1/n.
+3. Otherwise, keep your current pick.
+
+At item 2, replace with probability 1/2. At item 3, use 1/3. At item 4, use 1/4.
+
+After n items, every item seen so far has exactly a 1/n chance of being your pick, assuming independent, uniform random choices.
+
+Why does it work? An earlier item’s chance of surviving shrinks at exactly the right rate. After three items, the first item survives with probability (1 − 1/2) × (1 − 1/3) = 1/3.
+
+One pass. One stored item, plus a counter. No need to know the stream’s final size.
+
+A useful technique for sampling large files or streams without loading everything into memory.
+
+Sundra Builds × One Minute Curiosity
+Explore the episode and code:
+https://github.com/Bomjan/one-minute-curiosity/tree/main/episode-02-reservoir-sampling
+
+#Algorithms #DataStructures #BackendDevelopment #SundraBuilds
