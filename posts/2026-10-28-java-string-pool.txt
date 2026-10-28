@@ -1,0 +1,35 @@
+Why does == sometimes return true for matching Java strings?
+
+Meet the String Pool.
+
+Java interns string literals: identical literal values share a canonical String object.
+
+String a = "hello";
+String b = "hello";
+String c = new String("hello");
+
+System.out.println(a == b);       // true
+System.out.println(a == c);       // false
+System.out.println(a.equals(c));  // true
+
+Here, a and b refer to the same pooled object. The new String(...) expression creates a separate String object for c, containing the same text.
+
+What about intern()?
+
+String d = c.intern();
+System.out.println(a == d);       // true
+
+intern() returns the pooled reference for that text. It does not change c to refer to the pooled object: a == c is still false.
+
+This sharing is possible because String objects are immutable.
+
+The rule to remember: use .equals() for String contents. Use == when you specifically want to check object identity.
+
+The explicit new String(...) call is here to demonstrate the difference; you usually do not need it for ordinary literals.
+
+Official reference:
+https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html#intern()
+
+Code. Create. Keep learning.
+
+#Java #StringPool #ProgrammingBasics #SundraBuilds
