@@ -1,0 +1,28 @@
+Same text. Different objects.
+
+In Java, these are two different questions:
+
+String a = new String("hello");
+String b = new String("hello");
+
+System.out.println(a == b);       // false
+System.out.println(a.equals(b));  // true
+
+For object references, == asks whether both variables refer to the same object.
+
+String.equals() asks whether the strings contain the same sequence of characters.
+
+Here, each new String(...) creates a separate object. The text matches, but the objects are different.
+
+Why does == sometimes seem to work with string literals? Java shares identical string literals through interning. That does not make == a reliable way to compare text.
+
+Use .equals() when comparing String contents. If the variable before .equals() is null, the call throws NullPointerException.
+
+The explicit new String(...) calls above demonstrate the difference; ordinary string literals are usually enough in everyday code.
+
+Official reference:
+https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html#equals(java.lang.Object)
+
+Code. Create. Keep learning.
+
+#Java #ProgrammingBasics #LearningToCode #SundraBuilds
