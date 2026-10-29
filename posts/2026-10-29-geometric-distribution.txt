@@ -1,0 +1,24 @@
+You roll a die six times. No six.
+
+Surely the next roll is finally your turn?
+
+The die has no memory. If it is fair and the rolls are independent, the next roll still has a 1-in-6 chance of landing on six.
+
+Here is the surprising part: the chance of getting no six in your first six rolls is about 33.5%.
+
+That is roughly one in three attempts at this six-roll experiment. Not especially strange at all.
+
+The calculation is small: each roll has a 5-in-6 chance of missing. For six independent misses, multiply 5/6 by itself six times.
+
+The number of rolls you wait for your first six follows a geometric distribution. Its average is six rolls, but an average is not a deadline. Some waits end immediately; others run much longer.
+
+This matters in code too. If you simulate independent attempts with a fixed chance of success, repeated failures do not make the next attempt more likely to succeed. Real systems can behave differently when conditions change or attempts are linked.
+
+Randomness does not owe you a win.
+
+Explore the maths:
+https://www.stat.berkeley.edu/~stark/SticiGui/Text/randomVariables.htm
+
+Code. Create. Keep learning.
+
+#Probability #Statistics #GeometricDistribution #SundraBuilds
