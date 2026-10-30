@@ -1,0 +1,29 @@
+What prints first: 1 or 2?
+
+Inside a Go function:
+
+defer fmt.Println(1)
+fmt.Println(2)
+
+The answer is 2, then 1.
+
+The first line registers a call for later. It runs just before the surrounding function returns, so the ordinary print happens first.
+
+This is why defer is useful for cleanup. After successfully opening a file, you can register defer f.Close() immediately. The cleanup stays beside the code that acquired the resource, even if more return paths appear below it.
+
+There are two details worth remembering.
+
+Several deferred calls run in reverse registration order: the last one registered runs first.
+
+And defer waits for the surrounding function to return, not merely for a loop iteration or an inner block to finish. Deferring file closes inside a long loop can therefore keep many files open until the function returns.
+
+One more subtlety: the call’s arguments are evaluated when defer is executed, even though the call itself runs later.
+
+A small keyword, with a very specific promise: register the call now; run it before this function returns.
+
+Official reference:
+https://go.dev/ref/spec#Defer_statements
+
+Code. Create. Keep learning.
+
+#Golang #BackendDevelopment #ProgrammingBasics #SundraBuilds
