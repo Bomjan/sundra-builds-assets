@@ -1,0 +1,26 @@
+You add one more item to a list. Suddenly, it copies every item already there.
+
+How can anyone call that fast?
+
+Imagine a dynamic array that doubles its capacity whenever it fills up.
+
+With four items in four slots, the fifth append needs a larger array. It copies the four existing items into eight slots, then stores the new item. That append is expensive.
+
+But the next few appends use the spare room. They do not copy the whole array again.
+
+Starting from capacity one, the resize copies form a pattern: 1, 2, 4, 8, and so on. Across n appends from empty, those copies total less than 2n. Add the n new-item writes, and the overall work is still O(n).
+
+That is O(1) amortized cost per append, even though an individual resizing append can cost O(n).
+
+“Amortized” spreads the total cost across the sequence. It does not promise that every operation is quick, and it does not depend on lucky random inputs.
+
+Java’s ArrayList also guarantees amortized constant-time append, but its API does not promise this exact doubling policy.
+
+A rare expensive operation can be affordable when it buys enough cheap ones afterward.
+
+Reference:
+https://docs.oracle.com/en/java/javase/22/docs/api/java.base/java/util/ArrayList.html
+
+Code. Create. Keep learning.
+
+#DataStructures #Algorithms #Java #SundraBuilds
